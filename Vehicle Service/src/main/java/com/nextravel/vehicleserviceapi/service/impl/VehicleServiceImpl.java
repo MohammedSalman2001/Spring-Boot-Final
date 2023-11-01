@@ -21,6 +21,7 @@ import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -78,6 +79,34 @@ public class VehicleServiceImpl implements VehicleService {
         } catch ( Exception e ) {
             throw new NotFoundException("Vehicle Not Found",e);
         }
+    }
+
+    @Override
+    public List<VehicleDto> searchByCategory(String category) throws NotFoundException {
+        ArrayList<VehicleDto> objects = new ArrayList<>();
+        try {
+            List<Vehicle> byCategory = vehicleRepo.findByCategory(category);
+            for (Vehicle vehicle : byCategory) {
+                VehicleDto vehicleDTO = modelMapper.map(vehicle, VehicleDto.class);
+                DriverDto driverDTO = modelMapper.map(vehicle.getDriver(), DriverDto.class);
+                vehicleDTO.setDriverDTO(driverDTO);
+                importImages(vehicleDTO,vehicle.getDriver(),vehicle);
+                objects.add(vehicleDTO);
+            }
+            return objects;
+        }catch (Exception e){
+            throw new NotFoundException("Vehicles Not Found",e);
+        }
+    }
+
+    @Override
+    public void updateVehicle(VehicleDto dto) {
+
+    }
+
+    @Override
+    public void deleteVehicle(int id) {
+
     }
 
 
