@@ -4,6 +4,7 @@ package com.nextravel.guideserviceapi.service.impl;
 import com.google.gson.Gson;
 import com.nextravel.guideserviceapi.dto.GuideDTO;
 import com.nextravel.guideserviceapi.entity.Guide;
+import com.nextravel.guideserviceapi.exception.DeleteFailException;
 import com.nextravel.guideserviceapi.exception.NotFoundException;
 import com.nextravel.guideserviceapi.exception.SaveFailException;
 import com.nextravel.guideserviceapi.exception.UpdateFailException;
@@ -64,7 +65,14 @@ public class GuideServiceImpl implements GuidService {
     }
 
     @Override
-    public void deleteGuide(int id) {
+    public void deleteGuide(int id) throws DeleteFailException {
+        try {
+            guideRepo.findById(id).ifPresent(this::deleteImages);
+            guideRepo.deleteById(id);
+
+        }catch (Exception e){
+            throw new DeleteFailException("Operation Fail", e);
+        }
 
     }
 
