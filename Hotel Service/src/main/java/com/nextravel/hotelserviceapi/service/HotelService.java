@@ -1,5 +1,7 @@
 package com.nextravel.hotelserviceapi.service;
 
+import com.nextravel.hotelserviceapi.dto.HotelDTO;
+
 import java.util.List;
 
 public interface HotelService {
