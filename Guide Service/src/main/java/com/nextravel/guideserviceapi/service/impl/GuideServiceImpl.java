@@ -4,7 +4,9 @@ package com.nextravel.guideserviceapi.service.impl;
 import com.google.gson.Gson;
 import com.nextravel.guideserviceapi.dto.GuideDTO;
 import com.nextravel.guideserviceapi.entity.Guide;
+import com.nextravel.guideserviceapi.exception.NotFoundException;
 import com.nextravel.guideserviceapi.exception.SaveFailException;
+import com.nextravel.guideserviceapi.exception.UpdateFailException;
 import com.nextravel.guideserviceapi.repo.GuideRepo;
 import com.nextravel.guideserviceapi.service.GuidService;
 import jakarta.transaction.Transactional;
@@ -16,6 +18,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -42,7 +45,21 @@ public class GuideServiceImpl implements GuidService {
     }
 
     @Override
-    public void updateGuide(GuideDTO guideDTO) {
+    public void updateGuide(GuideDTO guideDTO) throws UpdateFailException {
+        try {
+            Optional<Guide> byId = guideRepo.findById(guideDTO.getId());
+            if (byId.isPresent()){
+                deleteImages(byId.get());
+                Guide map = mapper.map(guideDTO, Guide.class);
+                exportImages(guideDTO, map);
+                guideRepo.save(map);
+            }else {
+                throw new NotFoundException("Not Found");
+            }
+
+        }catch (Exception e){
+            throw new UpdateFailException("Operation Fail", e);
+        }
 
     }
 
