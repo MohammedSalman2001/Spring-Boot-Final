@@ -94,5 +94,14 @@ public class GuideController {
     }
 
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteGuide(@PathVariable int id) {
+        try {
+            guidService.deleteGuide(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        }
+    }
 
 }
