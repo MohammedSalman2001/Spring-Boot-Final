@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class Driver {
-
     @Id
-    private String driverId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
     private String driverName;
     private String driverContact;
     private String driverNic;
