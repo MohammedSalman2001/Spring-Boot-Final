@@ -2,6 +2,8 @@ package com.nextravel.hotelserviceapi.api;
 
 import com.nextravel.hotelserviceapi.dto.HotelDTO;
 import com.nextravel.hotelserviceapi.dto.PricesDTO;
+import com.nextravel.hotelserviceapi.exception.DeleteFailException;
+import com.nextravel.hotelserviceapi.exception.NotFoundException;
 import com.nextravel.hotelserviceapi.exception.SaveFailException;
 import com.nextravel.hotelserviceapi.exception.UpdateFailException;
 import com.nextravel.hotelserviceapi.service.HotelService;
@@ -12,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/hotel")
@@ -104,6 +107,39 @@ public class HotelController {
         } catch (UpdateFailException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity delete(@PathVariable int id){
+        try {
+            hotelService.delete(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (DeleteFailException | NotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/{starRate:^Star-[2-5]$}")
+    public ResponseEntity getByStarRate(@PathVariable String starRate){
+//        int star = Integer.parseInt((starRate.split("-"))[1]);
+        try {
+            List<HotelDTO> byStarRate = hotelService.findByStarRate(starRate);
+            return new ResponseEntity<>(byStarRate, HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity getById(@PathVariable int id)  {
+        try {
+            HotelDTO search = hotelService.search(id);
+            return new ResponseEntity<>(search, HttpStatus.OK);
+        }catch (NotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+
     }
 
 }

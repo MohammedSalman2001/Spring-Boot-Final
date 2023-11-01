@@ -3,7 +3,10 @@ package com.nextravel.hotelserviceapi.service.impl;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.nextravel.hotelserviceapi.dto.HotelDTO;
+import com.nextravel.hotelserviceapi.dto.PricesDTO;
 import com.nextravel.hotelserviceapi.entity.Hotel;
+import com.nextravel.hotelserviceapi.exception.DeleteFailException;
+import com.nextravel.hotelserviceapi.exception.NotFoundException;
 import com.nextravel.hotelserviceapi.exception.SaveFailException;
 import com.nextravel.hotelserviceapi.exception.UpdateFailException;
 import com.nextravel.hotelserviceapi.repo.HotelRepo;
@@ -67,18 +70,65 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public void delete(int id) {
-
+    public void delete(int id) throws DeleteFailException, NotFoundException {
+        try {
+            Optional<Hotel> byId = hotelRepo.findById(id);
+            if (byId.isPresent()){
+                deleteImages(byId);
+                hotelRepo.deleteById(id);
+            }else {
+                throw new NotFoundException("Hotel Not Found");
+            }
+        }catch (NotFoundException e){
+            throw e;
+        }catch (Exception e){
+            throw new DeleteFailException("Delete Fail ",e);
+        }
     }
 
     @Override
-    public HotelDTO search(int id) {
-        return null;
+    public HotelDTO search(int id) throws NotFoundException {
+
+        try {
+            Optional<Hotel> byId = hotelRepo.findById(id);
+            if (byId.isPresent()){
+                HotelDTO hotel = modelMapper.map(byId.get(), HotelDTO.class);
+                importImages(hotel,byId.get());
+                return hotel;
+            }else {
+                throw new NotFoundException("Hotel Not Found");
+            }
+        } catch (Exception e) {
+            throw new NotFoundException("Error Occurred :(",e);
+        }
     }
 
     @Override
-    public List<HotelDTO> findByStarRate(String id) {
-        return null;
+    public List<HotelDTO> findByStarRate(String id) throws NotFoundException {
+        try {
+            List<Hotel> byStar = hotelRepo.findByCategory(id);
+            for (Hotel c: byStar){
+                System.out.println(c.getCategory());
+                System.out.println(c.getPhone());
+            }
+
+            if (!byStar.isEmpty()){
+                List<HotelDTO> hotelDTOS = new ArrayList<>();
+                for (Hotel hotel : byStar) {
+                    HotelDTO hotelDTO = modelMapper.map(hotel, HotelDTO.class);
+                    hotelDTO.setPrices(gson.fromJson(hotel.getPrices(),new TypeToken<ArrayList<PricesDTO>>(){}));
+                    hotelDTO.setPhone(gson.fromJson(hotel.getPhone(),new TypeToken<ArrayList<String>>(){}));
+
+                    importImages(hotelDTO,hotel);
+                    hotelDTOS.add(hotelDTO);
+                }
+                return hotelDTOS;
+            }else {
+                throw new NotFoundException("Hotels Not Found");
+            }
+        } catch (Exception e) {
+            throw new NotFoundException("Not Found",e);
+        }
     }
 
     public void exportImages(HotelDTO hotelDTO, Hotel hotel) {
