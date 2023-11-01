@@ -2,6 +2,7 @@ package com.nextravel.guideserviceapi.api;
 
 import com.nextravel.guideserviceapi.dto.GuideDTO;
 import com.nextravel.guideserviceapi.exception.SaveFailException;
+import com.nextravel.guideserviceapi.exception.SearchFailException;
 import com.nextravel.guideserviceapi.exception.UpdateFailException;
 import com.nextravel.guideserviceapi.service.GuidService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,5 +104,19 @@ public class GuideController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity getGuide(@PathVariable int id) {
+
+        try {
+            GuideDTO guide = guidService.getGuide(id);
+            return new ResponseEntity<>(guide, HttpStatus.OK);
+        } catch (SearchFailException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        }
+
+    }
+
+
 
 }

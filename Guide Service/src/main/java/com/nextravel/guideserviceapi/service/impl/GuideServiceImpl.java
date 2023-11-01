@@ -4,10 +4,7 @@ package com.nextravel.guideserviceapi.service.impl;
 import com.google.gson.Gson;
 import com.nextravel.guideserviceapi.dto.GuideDTO;
 import com.nextravel.guideserviceapi.entity.Guide;
-import com.nextravel.guideserviceapi.exception.DeleteFailException;
-import com.nextravel.guideserviceapi.exception.NotFoundException;
-import com.nextravel.guideserviceapi.exception.SaveFailException;
-import com.nextravel.guideserviceapi.exception.UpdateFailException;
+import com.nextravel.guideserviceapi.exception.*;
 import com.nextravel.guideserviceapi.repo.GuideRepo;
 import com.nextravel.guideserviceapi.service.GuidService;
 import jakarta.transaction.Transactional;
@@ -77,9 +74,20 @@ public class GuideServiceImpl implements GuidService {
     }
 
     @Override
-    public GuideDTO getGuide(int id) {
-        return null;
+    public GuideDTO getGuide(int id) throws SearchFailException {
+        try {
+            Optional<Guide> byId = guideRepo.findById(id);
+            if (byId.isPresent()){
+                GuideDTO guide = mapper.map(byId.get(), GuideDTO.class);
+                importImages(guide,byId.get());
+                return guide;
+            }
+            throw new NotFoundException("Not Found");
+        }catch (Exception e){
+            throw new SearchFailException("Operation Fail", e);
+        }
     }
+
 
     public void exportImages(GuideDTO guideDTO, Guide guide) {
         String dt = LocalDate.now().toString().replace("-", "_") + "__"
