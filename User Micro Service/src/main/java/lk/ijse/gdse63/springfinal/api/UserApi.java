@@ -148,7 +148,7 @@ public class UserApi {
         }
     }*/
 
-    @DeleteMapping(params = "email")
+    @DeleteMapping(params = {"email"})
     public ResponseEntity deleteByEmail(@RequestParam String email){
         userService.deleteCustomer(email);
         return new ResponseEntity<>(HttpStatus.OK);
