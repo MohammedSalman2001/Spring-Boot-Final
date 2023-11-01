@@ -3,6 +3,7 @@ package com.nextravel.vehicleserviceapi.api;
 import com.nextravel.vehicleserviceapi.dto.core.DriverDto;
 import com.nextravel.vehicleserviceapi.dto.core.VehicleDto;
 import com.nextravel.vehicleserviceapi.exception.SaveFailException;
+import com.nextravel.vehicleserviceapi.exception.UpdatefailException;
 import com.nextravel.vehicleserviceapi.service.VehicleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -79,5 +80,66 @@ public class VehicleController {
         } catch (SaveFailException e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.CONFLICT);
         }
+    }
+
+    @PutMapping("/{id}/{did}")
+    public ResponseEntity updateVehicle(@PathVariable int id,
+                                        @RequestParam String vehicleName,
+                                        @RequestParam String fuelType,
+                                        @RequestParam String isHybrid,
+                                        @RequestParam ArrayList<MultipartFile> files,
+                                        @RequestParam double priceFor1Km,
+                                        @RequestParam double fuelUsage,
+                                        @RequestParam double priceFor100Km,
+                                        @RequestParam int noOfSeats,
+                                        @RequestParam String vehicleType,
+                                        @RequestParam String category,
+                                        @RequestParam String transmission,
+                                        @PathVariable int did,
+                                        @RequestParam String driverName,
+                                        @RequestParam String nicNo,
+                                        @RequestParam String contactNO,
+                                        @RequestPart byte[] licenceImageFront,
+                                        @RequestPart byte[] licenceImageRear,
+                                        @RequestParam String remarks) {
+
+        VehicleDto vehicleDTO = new VehicleDto();
+        DriverDto driverDTO = new DriverDto();
+        ArrayList<byte[]> objects = new ArrayList<>();
+        files.stream().forEach(file -> {
+            try {
+                objects.add(file.getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        vehicleDTO.setDriverDTO(driverDTO);
+        vehicleDTO.setId(id);
+        vehicleDTO.setVehicleName(vehicleName);
+        vehicleDTO.setFuelType(fuelType);
+        vehicleDTO.setHybrid(isHybrid);
+        vehicleDTO.setPriceFor1Km(priceFor1Km);
+        vehicleDTO.setFuelUsage(fuelUsage);
+        vehicleDTO.setPriceFor100Km(priceFor100Km);
+        vehicleDTO.setSeatCapacity(noOfSeats);
+        vehicleDTO.setVehicleType(vehicleType);
+        vehicleDTO.setCategory(category);
+        vehicleDTO.setTransmission(transmission);
+        vehicleDTO.setImages(objects);
+        driverDTO.setId(did);
+        driverDTO.setDriverName(driverName);
+        driverDTO.setDriverNic(nicNo);
+        driverDTO.setDriverContact(contactNO);
+        driverDTO.setLicenseImageFront(licenceImageFront);
+        driverDTO.setLicenseImageRear(licenceImageRear);
+        driverDTO.setDriverRemarks(remarks);
+
+        try {
+            vehicleService.updateVehicle(vehicleDTO);
+            return new ResponseEntity(HttpStatus.OK);
+        } catch (UpdatefailException e) {
+            return new ResponseEntity(e.getMessage(), HttpStatus.CONFLICT);
+        }
+
     }
 }
