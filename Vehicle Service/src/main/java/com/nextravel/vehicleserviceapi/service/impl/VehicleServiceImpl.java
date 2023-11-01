@@ -2,9 +2,11 @@ package com.nextravel.vehicleserviceapi.service.impl;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.nextravel.vehicleserviceapi.dto.core.DriverDto;
 import com.nextravel.vehicleserviceapi.dto.core.VehicleDto;
 import com.nextravel.vehicleserviceapi.entity.Driver;
 import com.nextravel.vehicleserviceapi.entity.Vehicle;
+import com.nextravel.vehicleserviceapi.exception.NotFoundException;
 import com.nextravel.vehicleserviceapi.exception.SaveFailException;
 import com.nextravel.vehicleserviceapi.repo.DriverRepo;
 import com.nextravel.vehicleserviceapi.repo.VehicleRepo;
@@ -19,6 +21,7 @@ import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -58,6 +61,26 @@ public class VehicleServiceImpl implements VehicleService {
 
 
     }
+
+    @Override
+    public VehicleDto searchVehicle(int id) throws NotFoundException {
+        try {
+            Optional<Vehicle> byId = vehicleRepo.findById(id);
+            if (byId.isPresent()){
+                VehicleDto vehicle = modelMapper.map(byId.get(), VehicleDto.class);
+                DriverDto driver = modelMapper.map(byId.get().getDriver(), DriverDto.class);
+                vehicle.setDriverDTO(driver);
+                importImages(vehicle,byId.get().getDriver(),byId.get());
+                return vehicle;
+            }else {
+                throw new NotFoundException("Vehicle Not Found");
+            }
+        } catch ( Exception e ) {
+            throw new NotFoundException("Vehicle Not Found",e);
+        }
+    }
+
+
     public void exportImages(VehicleDto vehicleDTO, Driver driver, Vehicle vehicle) {
         ArrayList<byte[]> images = vehicleDTO.getImages();
         String dt = LocalDate.now().toString().replace("-", "_") + "__"
