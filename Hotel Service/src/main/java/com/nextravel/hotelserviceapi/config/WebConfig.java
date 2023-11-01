@@ -1,6 +1,7 @@
 package com.nextravel.hotelserviceapi.config;
 
-import lk.ijse.gdse63.hotel_micro_service.util.StringToPricesListConverter;
+
+import com.nextravel.hotelserviceapi.util.StringToPricesListConverter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
