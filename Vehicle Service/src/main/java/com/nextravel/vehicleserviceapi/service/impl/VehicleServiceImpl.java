@@ -6,8 +6,10 @@ import com.nextravel.vehicleserviceapi.dto.core.DriverDto;
 import com.nextravel.vehicleserviceapi.dto.core.VehicleDto;
 import com.nextravel.vehicleserviceapi.entity.Driver;
 import com.nextravel.vehicleserviceapi.entity.Vehicle;
+import com.nextravel.vehicleserviceapi.exception.DeleteFailException;
 import com.nextravel.vehicleserviceapi.exception.NotFoundException;
 import com.nextravel.vehicleserviceapi.exception.SaveFailException;
+import com.nextravel.vehicleserviceapi.exception.UpdatefailException;
 import com.nextravel.vehicleserviceapi.repo.DriverRepo;
 import com.nextravel.vehicleserviceapi.repo.VehicleRepo;
 import com.nextravel.vehicleserviceapi.service.VehicleService;
@@ -100,14 +102,68 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public void updateVehicle(VehicleDto dto) {
+    public void updateVehicle(VehicleDto dto) throws UpdatefailException {
+        try {
+            Vehicle vehicle = modelMapper.map(dto, Vehicle.class);
+            Driver driver = modelMapper.map(dto.getDriverDTO(), Driver.class);
+            Optional<Driver> byId = driverRepo.findById(driver.getId());
+            if (byId.isPresent()){
+                deleteImages(byId);
+                exportImages(dto,driver,vehicle);
+                Driver save = driverRepo.save(driver);
+                vehicle.setDriver(save);
+                vehicleRepo.save(vehicle);
+            }
 
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new UpdatefailException("Update Fail",e);
+        }
     }
 
     @Override
-    public void deleteVehicle(int id) {
-
+    public void deleteVehicle(int id) throws DeleteFailException {
+        try {
+            Optional<Driver> byId = driverRepo.findById(id);
+            if (byId.isPresent()){
+                deleteImages(byId);
+                vehicleRepo.deleteById(id);
+            }else {
+                throw new NotFoundException("Vehicle Not Found");
+            }
+        }catch (Exception e){
+            throw new DeleteFailException("Delete Fail",e);
+        }
     }
+
+    private void deleteImages(Optional<Driver> byId) {
+        if (byId.isPresent()){
+            if (byId.get().getLicenseImageFront() != null) {
+                File file = new File(byId.get().getLicenseImageFront());
+                boolean delete = file.delete();
+                System.out.println("Front " + delete);
+            }
+            if (byId.get().getLicenseImageRear() != null) {
+                File file = new File(byId.get().getLicenseImageRear());
+                boolean delete = file.delete();
+                System.out.println("Rear " + delete);
+            }
+            if (byId.isPresent()){
+                Driver driver = byId.get();
+                String images = driver.getVehicle().getImages();
+                if (images != null){
+                    ArrayList<String> pathList = gson.fromJson(images, new TypeToken<ArrayList<String>>(){}.getType());
+                    for (String path : pathList) {
+                        File file = new File(path);
+                        boolean delete = file.delete();
+                        System.out.println("Images " + delete);
+                    }
+                }
+            }
+        }
+    }
+
+
 
 
     public void exportImages(VehicleDto vehicleDTO, Driver driver, Vehicle vehicle) {
