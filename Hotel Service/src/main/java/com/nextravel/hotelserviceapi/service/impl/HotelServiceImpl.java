@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import com.nextravel.hotelserviceapi.dto.HotelDTO;
 import com.nextravel.hotelserviceapi.entity.Hotel;
 import com.nextravel.hotelserviceapi.exception.SaveFailException;
+import com.nextravel.hotelserviceapi.exception.UpdateFailException;
 import com.nextravel.hotelserviceapi.repo.HotelRepo;
 import com.nextravel.hotelserviceapi.service.HotelService;
 import jakarta.transaction.Transactional;
@@ -49,8 +50,20 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public void update(HotelDTO hotelDTO) {
-
+    public void update(HotelDTO hotelDTO) throws UpdateFailException {
+        try {
+            Optional<Hotel> byId = hotelRepo.findById(hotelDTO.getId());
+            if (byId.isPresent()){
+                deleteImages(byId);
+                Hotel map = modelMapper.map(hotelDTO, Hotel.class);
+                map.setPhone(gson.toJson(hotelDTO.getPhone()));
+                map.setPrices(gson.toJson(hotelDTO.getPrices()));
+                exportImages(hotelDTO,map);
+                hotelRepo.save(map);
+            }
+        }catch (Exception e){
+            throw new UpdateFailException("Update Fail ",e);
+        }
     }
 
     @Override
