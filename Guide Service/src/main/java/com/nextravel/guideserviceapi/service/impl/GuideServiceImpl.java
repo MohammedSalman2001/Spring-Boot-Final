@@ -4,6 +4,7 @@ package com.nextravel.guideserviceapi.service.impl;
 import com.google.gson.Gson;
 import com.nextravel.guideserviceapi.dto.GuideDTO;
 import com.nextravel.guideserviceapi.entity.Guide;
+import com.nextravel.guideserviceapi.exception.SaveFailException;
 import com.nextravel.guideserviceapi.repo.GuideRepo;
 import com.nextravel.guideserviceapi.service.GuidService;
 import jakarta.transaction.Transactional;
@@ -29,9 +30,14 @@ public class GuideServiceImpl implements GuidService {
         this.guideRepo = guideRepo;
     }
     @Override
-    public int saveGuide(GuideDTO guideDTO) {
-        Guide guide = mapper.map(guideDTO, Guide.class);
-        ex
+    public int saveGuide(GuideDTO guideDTO) throws SaveFailException {
+        try {
+            Guide map = mapper.map(guideDTO, Guide.class);
+            exportImages(guideDTO, map);
+            return guideRepo.save(map).getId();
+        }catch (Exception e){
+            throw new SaveFailException("Operation Fail", e);
+        }
 
     }
 
