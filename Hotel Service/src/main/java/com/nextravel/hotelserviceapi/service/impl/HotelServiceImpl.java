@@ -93,6 +93,8 @@ public class HotelServiceImpl implements HotelService {
             Optional<Hotel> byId = hotelRepo.findById(id);
             if (byId.isPresent()){
                 HotelDTO hotel = modelMapper.map(byId.get(), HotelDTO.class);
+                hotel.setPrices(gson.fromJson(byId.get().getPrices(),new TypeToken<ArrayList<PricesDTO>>(){}));
+                hotel.setPhone(gson.fromJson(byId.get().getPhone(),new TypeToken<ArrayList<String>>(){}));
                 importImages(hotel,byId.get());
                 return hotel;
             }else {
