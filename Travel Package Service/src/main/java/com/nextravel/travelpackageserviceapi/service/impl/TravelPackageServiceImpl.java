@@ -16,16 +16,15 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.TreeSet;
 
 @Service
-public class TravelPackageServiceIMPL implements TravelPackageService {
+public class TravelPackageServiceImpl implements TravelPackageService {
     TravelPackageRepo travelPackageRepo;
     ModelMapper modelMapper;
 
 
 
-    public TravelPackageServiceIMPL(TravelPackageRepo travelPackageRepo,
+    public TravelPackageServiceImpl(TravelPackageRepo travelPackageRepo,
                                     ModelMapper modelMapper) {
         this.travelPackageRepo = travelPackageRepo;
         this.modelMapper = modelMapper;
@@ -57,7 +56,7 @@ public class TravelPackageServiceIMPL implements TravelPackageService {
     }
 
     @Override
-    public void delete(String id) throws DeleteFailException {
+    public void delete(int id) throws DeleteFailException {
         try{
             travelPackageRepo.deleteById(id);
         }catch (Exception e){
@@ -66,13 +65,22 @@ public class TravelPackageServiceIMPL implements TravelPackageService {
 
     }
 
-    @Override
-    public List<TravelPackageDTO> getPackagesByCategory(String category) {
-        return null;
+    public List<TravelPackageDTO> findAll(){
+        Iterable<TravelPackage> travelPackageRepoAll = travelPackageRepo.findAll();
+         ArrayList<TravelPackageDTO> list = modelMapper.map(travelPackageRepoAll, new TypeToken<ArrayList<TravelPackageDTO>>() {}.getType());
+         return list;
     }
 
     @Override
-    public TravelPackageDTO fidById(String id) throws NotFoundException {
+    public List<TravelPackageDTO> findAllByCategory(String value) {
+        List<TravelPackage> byCategory = travelPackageRepo.findAllByCategory(value);
+        ArrayList<TravelPackageDTO> arrayList = modelMapper.map(byCategory, new TypeToken<ArrayList<TravelPackageDTO>>() {}.getType());
+        return arrayList;
+    }
+
+
+    @Override
+    public TravelPackageDTO fidById(int id) throws NotFoundException {
         Optional<TravelPackage> byId = travelPackageRepo.findById(id);
         if (byId.isPresent()) {
             return modelMapper.map(byId.get(), TravelPackageDTO.class);
@@ -81,12 +89,13 @@ public class TravelPackageServiceIMPL implements TravelPackageService {
         }
     }
 
-    @Override
+
+
+/*    @Override
     public List<TravelPackageDTO> findByCategory(String category) throws NotFoundException {
         try{
             List<TravelPackage> byCategory = travelPackageRepo.findByCategory(category);
-            ArrayList<TravelPackageDTO> list = modelMapper.map(byCategory, new TypeToken<ArrayList<TravelPackageDTO>>() {
-            }.getType());
+            ArrayList<TravelPackageDTO> list = modelMapper.map(byCategory, new TypeToken<ArrayList<TravelPackageDTO>>() {}.getType());
             if (list.isEmpty()) {
                 throw new NotFoundException("Not Found");
             }
@@ -95,7 +104,7 @@ public class TravelPackageServiceIMPL implements TravelPackageService {
             throw new NotFoundException("Not Found",e);
         }
 
-    }
+    }*/
 
 
 }
