@@ -1,15 +1,14 @@
-package com.nextravel.travelpackageapi.entity;
+package com.nextravel.travelpackageserviceapi.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TravelPackage extends SuperEntity{
-    @Id
-    private String id;
+public class TravelPackageDTO {
+    private int id;
     private int hotelCount;
     private int areaCount;
     private double estimatedPrice;

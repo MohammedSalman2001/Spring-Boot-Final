@@ -1,4 +1,4 @@
-package com.nextravel.travelpackageapi.entity;
+package com.nextravel.travelpackageserviceapi.entity;
 
 import java.io.Serializable;
 
