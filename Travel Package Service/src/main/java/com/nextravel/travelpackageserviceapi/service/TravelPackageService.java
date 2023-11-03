@@ -1,25 +1,21 @@
 package com.nextravel.travelpackageserviceapi.service;
 
-import com.nextravel.travelpackageserviceapi.dto.TravelPackageDTO;
-import com.nextravel.travelpackageserviceapi.entity.TravelPackage;
-import com.nextravel.travelpackageserviceapi.exception.DeleteFailException;
-import com.nextravel.travelpackageserviceapi.exception.NotFoundException;
-import com.nextravel.travelpackageserviceapi.exception.SaveFailException;
-import com.nextravel.travelpackageserviceapi.exception.UpdateFailException;
-
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.dto.TravelPackageDTO;
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.exception.DeleteFailException;
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.exception.NotFoundException;
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.exception.SaveFailException;
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.exception.UpdateFailException;
 
 import java.util.List;
 
 
 public interface TravelPackageService {
 
-    public int save(TravelPackageDTO dto) throws SaveFailException;
+    public String save(TravelPackageDTO obj) throws SaveFailException;
     void update(TravelPackageDTO obj) throws UpdateFailException;
-    TravelPackageDTO fidById(int id) throws NotFoundException;
-
-    void delete(int id) throws DeleteFailException;
-
-    public List<TravelPackageDTO> findAll();
-
-    List<TravelPackageDTO>  findAllByCategory(String value);
+    void delete(String id) throws DeleteFailException;
+    List<TravelPackageDTO> getPackagesByCategory(String category);
+    TravelPackageDTO fidById(String id) throws NotFoundException;
+    List<TravelPackageDTO> findByCategory(String category) throws NotFoundException;
+    String generateNextId();
 }

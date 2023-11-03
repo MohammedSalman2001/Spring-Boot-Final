@@ -1,14 +1,13 @@
 package com.nextravel.travelpackageserviceapi.service.impl;
 
-
-import com.nextravel.travelpackageserviceapi.dto.TravelPackageDTO;
-import com.nextravel.travelpackageserviceapi.entity.TravelPackage;
-import com.nextravel.travelpackageserviceapi.exception.DeleteFailException;
-import com.nextravel.travelpackageserviceapi.exception.NotFoundException;
-import com.nextravel.travelpackageserviceapi.exception.SaveFailException;
-import com.nextravel.travelpackageserviceapi.exception.UpdateFailException;
-import com.nextravel.travelpackageserviceapi.repo.TravelPackageRepo;
-import com.nextravel.travelpackageserviceapi.service.TravelPackageService;
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.dto.TravelPackageDTO;
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.entity.TravelPackage;
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.exception.DeleteFailException;
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.exception.NotFoundException;
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.exception.SaveFailException;
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.exception.UpdateFailException;
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.repo.TravelPackageRepo;
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.service.TravelPackageService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
@@ -16,15 +15,16 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.TreeSet;
 
 @Service
-public class TravelPackageServiceImpl implements TravelPackageService {
+public class TravelPackageServiceIMPL implements TravelPackageService {
     TravelPackageRepo travelPackageRepo;
     ModelMapper modelMapper;
 
 
 
-    public TravelPackageServiceImpl(TravelPackageRepo travelPackageRepo,
+    public TravelPackageServiceIMPL(TravelPackageRepo travelPackageRepo,
                                     ModelMapper modelMapper) {
         this.travelPackageRepo = travelPackageRepo;
         this.modelMapper = modelMapper;
@@ -32,9 +32,10 @@ public class TravelPackageServiceImpl implements TravelPackageService {
     }
 
     @Override
-    public int save(TravelPackageDTO obj) throws SaveFailException {
+    public String save(TravelPackageDTO obj) throws SaveFailException {
         try {
-
+            String id = generateNextId();
+            obj.setId(id);
             TravelPackage map = modelMapper.map(obj, TravelPackage.class);
             TravelPackage save = travelPackageRepo.save(map);
             return save.getId();
@@ -56,7 +57,7 @@ public class TravelPackageServiceImpl implements TravelPackageService {
     }
 
     @Override
-    public void delete(int id) throws DeleteFailException {
+    public void delete(String id) throws DeleteFailException {
         try{
             travelPackageRepo.deleteById(id);
         }catch (Exception e){
@@ -65,22 +66,13 @@ public class TravelPackageServiceImpl implements TravelPackageService {
 
     }
 
-    public List<TravelPackageDTO> findAll(){
-        Iterable<TravelPackage> travelPackageRepoAll = travelPackageRepo.findAll();
-         ArrayList<TravelPackageDTO> list = modelMapper.map(travelPackageRepoAll, new TypeToken<ArrayList<TravelPackageDTO>>() {}.getType());
-         return list;
+    @Override
+    public List<TravelPackageDTO> getPackagesByCategory(String category) {
+        return null;
     }
 
     @Override
-    public List<TravelPackageDTO> findAllByCategory(String value) {
-        List<TravelPackage> byCategory = travelPackageRepo.findAllByCategory(value);
-        ArrayList<TravelPackageDTO> arrayList = modelMapper.map(byCategory, new TypeToken<ArrayList<TravelPackageDTO>>() {}.getType());
-        return arrayList;
-    }
-
-
-    @Override
-    public TravelPackageDTO fidById(int id) throws NotFoundException {
+    public TravelPackageDTO fidById(String id) throws NotFoundException {
         Optional<TravelPackage> byId = travelPackageRepo.findById(id);
         if (byId.isPresent()) {
             return modelMapper.map(byId.get(), TravelPackageDTO.class);
@@ -89,13 +81,12 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         }
     }
 
-
-
-/*    @Override
+    @Override
     public List<TravelPackageDTO> findByCategory(String category) throws NotFoundException {
         try{
             List<TravelPackage> byCategory = travelPackageRepo.findByCategory(category);
-            ArrayList<TravelPackageDTO> list = modelMapper.map(byCategory, new TypeToken<ArrayList<TravelPackageDTO>>() {}.getType());
+            ArrayList<TravelPackageDTO> list = modelMapper.map(byCategory, new TypeToken<ArrayList<TravelPackageDTO>>() {
+            }.getType());
             if (list.isEmpty()) {
                 throw new NotFoundException("Not Found");
             }
@@ -104,7 +95,19 @@ public class TravelPackageServiceImpl implements TravelPackageService {
             throw new NotFoundException("Not Found",e);
         }
 
-    }*/
+    }
 
+    @Override
+    public String generateNextId() {
+        ArrayList<String> ids = new ArrayList<>();
+        TreeSet<Integer> numarical = new TreeSet<>();
+        List<TravelPackage> all = travelPackageRepo.findAll();
+        all.stream().map(TravelPackage::getId).forEach(ids::add);
+        ids.forEach(e->{
+            numarical.add(Integer.parseInt(e.split("NEXT-")[1]));
+        });
 
+        return String.format("NEXT-%05d", numarical.last() + 1);
+
+    }
 }

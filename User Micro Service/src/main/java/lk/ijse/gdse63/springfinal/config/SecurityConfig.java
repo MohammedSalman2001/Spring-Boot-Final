@@ -32,7 +32,7 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
-@CrossOrigin
+@CrossOrigin("*")
 public class SecurityConfig {
     @Autowired
     private JwtAuthorizationFilter jwtAuthorizationFilter;
@@ -53,7 +53,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        http.csrf().disable().cors().and()
                 .authorizeRequests()
                 .requestMatchers(HttpMethod.POST,"/api/v1/user/login").permitAll()
                 .requestMatchers(HttpMethod.POST,"/api/v1/user/0").permitAll()
@@ -65,6 +65,14 @@ public class SecurityConfig {
         cors.and().authorizeRequests();
 
         return http.build();
+/*        http.csrf().disable().cors().and()
+                .authorizeRequests()
+                .requestMatchers(HttpMethod.POST,"/api/v1/user/login/**").permitAll()
+                .anyRequest().authenticated()
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();*/
     }
 
 

@@ -1,10 +1,21 @@
 package lk.ijse.gdse63.springfinal.dto.sec;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class LoginRes {
     private String email;
     private String token;
 
-    public LoginRes(String email, String token) {
+    private Object data;
+
+/*    public LoginRes(String email, String token) {
         this.email = email;
         this.token = token;
     }
@@ -23,5 +34,5 @@ public class LoginRes {
 
     public void setToken(String token) {
         this.token = token;
-    }
+    }*/
 }

@@ -35,7 +35,8 @@ public class UserApi {
     private  AuthenticationManager authenticationManager;
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.POST,value = "/login")
+   @RequestMapping(method = RequestMethod.POST,value = "/login")
+//    @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity login(@RequestBody LoginReq loginReq)  {
         try {
             Authentication authentication =
@@ -43,7 +44,7 @@ public class UserApi {
             String email = authentication.getName();
             UserDTO user = userService.searchUserByEmail(email);
             String token = jwtUtil.createToken(user);
-            LoginRes loginRes = new LoginRes(email,token);
+            LoginRes loginRes = new LoginRes(email,token,user);
             return ResponseEntity.ok(loginRes);
 
         }catch (BadCredentialsException e){
@@ -107,7 +108,8 @@ public class UserApi {
     }
 
 
-    @PutMapping(value = "/{id:\\d+}")
+//    @PutMapping(value = "/{id:\\d+}")
+    @PutMapping
     public ResponseEntity<UserDTO> update(@RequestPart(value = "profilePic" , required = false) byte[] profilePic,
                                           @RequestPart(value = "userName")String userName,
                                           @RequestPart(value = "password") String password,

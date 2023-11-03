@@ -1,12 +1,11 @@
 package com.nextravel.travelpackageserviceapi.api;
 
-
-import com.nextravel.travelpackageserviceapi.dto.TravelPackageDTO;
-import com.nextravel.travelpackageserviceapi.exception.DeleteFailException;
-import com.nextravel.travelpackageserviceapi.exception.NotFoundException;
-import com.nextravel.travelpackageserviceapi.exception.SaveFailException;
-import com.nextravel.travelpackageserviceapi.exception.UpdateFailException;
-import com.nextravel.travelpackageserviceapi.service.TravelPackageService;
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.dto.TravelPackageDTO;
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.exception.DeleteFailException;
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.exception.NotFoundException;
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.exception.SaveFailException;
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.exception.UpdateFailException;
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.service.TravelPackageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +24,7 @@ public class TravelPackageApi {
     public ResponseEntity save(@RequestBody TravelPackageDTO obj){
         String save = null;
         try {
-            save = String.valueOf(service.save(obj));
+            save = service.save(obj);
             return ResponseEntity.ok(save);
         } catch (SaveFailException e) {
             return new ResponseEntity("Operation Fail", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -33,8 +32,8 @@ public class TravelPackageApi {
 
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity get(@PathVariable int id){
+    @GetMapping("/{id:^NEXT-\\d{5}$}")
+    public ResponseEntity get(@PathVariable String id){
         try {
             TravelPackageDTO travelPackageDTO = service.fidById(id);
             return ResponseEntity.ok(travelPackageDTO);
@@ -43,19 +42,15 @@ public class TravelPackageApi {
         }
     }
 
-   // @GetMapping("/{category:^REGULAR|MID-LEVEL|LUXURY|SUPER LUXURY$}")
+    @GetMapping("/{category:^REGULAR|MID-LEVEL|LUXURY|SUPER LUXURY$}")
+    public ResponseEntity getByCategory(@PathVariable String category){
+        try {
+            List<TravelPackageDTO> list  = service.findByCategory(category);
+            return ResponseEntity.ok(list);
+        } catch (NotFoundException e) {
+            return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
+        }
 
-    @GetMapping(params = "category")
-    public ResponseEntity findAll(@RequestParam String  category){
-        List<TravelPackageDTO> list  = service.findAllByCategory(category);
-        return ResponseEntity.ok(list);
-    }
-
-
-    @GetMapping(path = "list")
-    public ResponseEntity findAll(){
-        List<TravelPackageDTO> all = service.findAll();
-        return ResponseEntity.ok(all);
     }
 
     @PutMapping
@@ -69,9 +64,8 @@ public class TravelPackageApi {
 
     }
 
-//    @DeleteMapping("/{id:^NEXT-\\d{5}$}")
-    @DeleteMapping("{id}")
-    public ResponseEntity delete(@PathVariable int id){
+    @DeleteMapping("/{id:^NEXT-\\d{5}$}")
+    public ResponseEntity delete(@PathVariable String id){
         try {
             service.delete(id);
             return ResponseEntity.ok().build();
