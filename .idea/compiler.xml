@@ -7,11 +7,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="Hotel-Service-Api" />
-        <module name="Travel-Package-Service-Api" />
         <module name="VehicleServiceApi" />
-        <module name="Guide-Service-Api" />
         <module name="authenticate_micro_service" />
         <module name="User_Micro_Service" />
+        <module name="Travel-Package-Service-Api" />
+        <module name="Guide-Service-Api" />
+        <module name="UserTravel-Package-Api" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -24,6 +25,7 @@
       <module name="Hotel-Service-Api" options="-parameters" />
       <module name="Travel-Package-Api" options="-parameters" />
       <module name="Travel-Package-Service-Api" options="-parameters" />
+      <module name="UserTravel-Package-Api" options="-parameters" />
       <module name="User_Micro_Service" options="-parameters" />
       <module name="VehicleServiceApi" options="-parameters" />
       <module name="authenticate_micro_service" options="-parameters" />

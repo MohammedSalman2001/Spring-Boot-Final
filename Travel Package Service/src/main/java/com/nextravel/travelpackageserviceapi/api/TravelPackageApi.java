@@ -1,11 +1,7 @@
 package com.nextravel.travelpackageserviceapi.api;
 
-import lk.ijse.gdse63.spring_final.travel_package_micro_service.dto.TravelPackageDTO;
-import lk.ijse.gdse63.spring_final.travel_package_micro_service.exception.DeleteFailException;
-import lk.ijse.gdse63.spring_final.travel_package_micro_service.exception.NotFoundException;
-import lk.ijse.gdse63.spring_final.travel_package_micro_service.exception.SaveFailException;
-import lk.ijse.gdse63.spring_final.travel_package_micro_service.exception.UpdateFailException;
-import lk.ijse.gdse63.spring_final.travel_package_micro_service.service.TravelPackageService;
+
+import com.nextravel.travelpackageserviceapi.service.TravelPackageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
