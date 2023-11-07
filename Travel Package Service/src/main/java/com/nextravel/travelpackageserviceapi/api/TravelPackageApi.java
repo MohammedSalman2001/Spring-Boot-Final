@@ -1,7 +1,11 @@
 package com.nextravel.travelpackageserviceapi.api;
 
-
-import com.nextravel.travelpackageserviceapi.service.TravelPackageService;
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.dto.TravelPackageDTO;
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.exception.DeleteFailException;
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.exception.NotFoundException;
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.exception.SaveFailException;
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.exception.UpdateFailException;
+import lk.ijse.gdse63.spring_final.travel_package_micro_service.service.TravelPackageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +14,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/travel-package")
-@CrossOrigin
 public class TravelPackageApi {
     TravelPackageService service;
     public TravelPackageApi(TravelPackageService service){
@@ -28,14 +31,17 @@ public class TravelPackageApi {
 
     }
 
-    @GetMapping("/{id:^NEXT-\\d{5}$}")
+//    @GetMapping("/{id:^NEXT-\\d{4}$}")
+   @GetMapping(path = "id")
     public ResponseEntity get(@PathVariable String id){
-        try {
+      /*  try {
             TravelPackageDTO travelPackageDTO = service.fidById(id);
             return ResponseEntity.ok(travelPackageDTO);
         }catch (NotFoundException e){
             return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
-        }
+        }*/
+       return ResponseEntity.ok("hRI");
+
     }
 
     @GetMapping("/{category:^REGULAR|MID-LEVEL|LUXURY|SUPER LUXURY$}")
@@ -60,7 +66,7 @@ public class TravelPackageApi {
 
     }
 
-    @DeleteMapping("/{id:^NEXT-\\d{5}$}")
+    @DeleteMapping("/{id:^NEXT-\\d{4}$}")
     public ResponseEntity delete(@PathVariable String id){
         try {
             service.delete(id);

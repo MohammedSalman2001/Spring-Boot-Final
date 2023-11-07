@@ -1,29 +1,34 @@
 package com.nextravel.usertravelpackageapi.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.ToString;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
+import java.util.List;
 
 @Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserTravelPackage {
     @Id
-    private String  userTravelPackageId;
-    private String packageCategory;
-    private int hotelId;
-    private int vehicleId;
-    private int guideId;
-    private String travelArea;
-    private int NoAdults;
-    private int NoChildren;
-    private int totalHeadcount;
-    private int dayCount;
-    private double packagePrice;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    private String packageId;
+    private int customerId;
+    @ToString.Exclude
+    @OneToMany(mappedBy = "userTravelPackage",cascade = CascadeType.ALL)
+    private List<Place> places;
+    @ToString.Exclude
+    @OneToMany(mappedBy = "userTravelPackage" , cascade = CascadeType.ALL)
+    private List<Vehicle> vehicles;
+    @ToString.Exclude
+    @OneToMany(mappedBy = "userTravelPackage" , cascade = CascadeType.ALL)
+    private List<Hotel> hotels;
+    @OneToMany(mappedBy = "userTravelPackage" , cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private List<Payment> payments;
+
 }
